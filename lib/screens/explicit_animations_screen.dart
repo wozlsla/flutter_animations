@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class ExplicitAnimationsScreen extends StatefulWidget {
   const ExplicitAnimationsScreen({super.key});
@@ -15,8 +12,13 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 10),
+    duration: const Duration(seconds: 2),
   );
+
+  late final Animation<Color?> _color = ColorTween(
+    begin: Colors.amber,
+    end: Colors.red.shade400,
+  ).animate(_animationController);
 
   void _play() {
     _animationController.forward();
@@ -37,7 +39,6 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
 
   @override
   Widget build(BuildContext context) {
-    print("build");
     return Scaffold(
       appBar: AppBar(title: const Text('Explicit Animations')),
       body: Center(
@@ -45,12 +46,9 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedBuilder(
-              animation: _animationController,
+              animation: _color,
               builder: (context, child) {
-                return Text(
-                  "${_animationController.value}",
-                  style: const TextStyle(fontSize: 58),
-                );
+                return Container(color: _color.value, width: 400, height: 400);
               },
             ),
             Row(
