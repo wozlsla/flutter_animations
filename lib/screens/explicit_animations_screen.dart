@@ -15,7 +15,7 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
-    duration: Duration(seconds: 10),
+    duration: const Duration(seconds: 10),
   );
 
   void _play() {
@@ -33,23 +33,25 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
   @override
   void initState() {
     super.initState();
-    // Ticker((elapsed) => print(elapsed)).start();
-    Timer.periodic(Duration(milliseconds: 500), (timer) {
-      print(_animationController.value);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print("build");
     return Scaffold(
       appBar: AppBar(title: const Text('Explicit Animations')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "${_animationController.value}",
-              style: const TextStyle(fontSize: 58),
+            AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Text(
+                  "${_animationController.value}",
+                  style: const TextStyle(fontSize: 58),
+                );
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
