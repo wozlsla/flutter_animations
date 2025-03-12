@@ -2,21 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-class Task extends StatefulWidget {
-  const Task({super.key});
+class ImplicitTask extends StatefulWidget {
+  const ImplicitTask({super.key});
 
   @override
-  State<Task> createState() => _TaskState();
+  State<ImplicitTask> createState() => _ImplicitTaskState();
 }
 
-class _TaskState extends State<Task> {
+class _ImplicitTaskState extends State<ImplicitTask> {
   final _duration = Duration(seconds: 1);
   bool _isLeft = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
 
+    // 시작 시 begin == end : animation 즉시 시작
     Future.delayed(Duration.zero, () {
       setState(() {
         _isLeft = !_isLeft;
@@ -27,11 +29,19 @@ class _TaskState extends State<Task> {
   }
 
   void _animationLoop() {
-    Timer.periodic(_duration, (timer) {
-      setState(() {
-        _isLeft = !_isLeft;
-      });
+    _timer = Timer.periodic(_duration, (timer) {
+      if (mounted) {
+        setState(() {
+          _isLeft = !_isLeft;
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
