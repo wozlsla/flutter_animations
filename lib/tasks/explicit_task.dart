@@ -12,16 +12,18 @@ class ExplicitTask extends StatelessWidget {
         // 5x5
         children: List.generate(
           5,
-          (rowIdx) => Column(
+          (rowIndex) => Column(
             // mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Column: 자식의 높이에 맞춰짐 !!
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Row: 부모의 넓이
-                children: List.generate(5, (cols) {
-                  return Box(delay: 1);
+                children: List.generate(5, (colIndex) {
+                  int index = rowIndex.isEven ? colIndex : (4 - colIndex);
+                  double delay = ((4 - rowIndex) * 5 + (4 - index)) * 50;
+                  return Box(delay: delay.toInt());
                 }),
               ),
-              if (rowIdx < 4) SizedBox(height: 25),
+              if (rowIndex < 4) SizedBox(height: 25),
             ],
           ),
         ),
@@ -42,35 +44,35 @@ class Box extends StatefulWidget {
 class _BoxState extends State<Box> with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 2),
-    reverseDuration: const Duration(seconds: 2),
+    duration: const Duration(milliseconds: 1200),
+    reverseDuration: const Duration(milliseconds: 1200),
   );
 
-  late final Animation<Color?> _color = TweenSequence<Color?>([
-    TweenSequenceItem(
-      tween: ColorTween(begin: Colors.pink, end: Colors.green),
-      weight: 50,
-    ),
-    TweenSequenceItem(
-      tween: ColorTween(begin: Colors.green, end: Colors.red),
-      weight: 50,
-    ),
-  ]).animate(_animationController);
+  late final CurvedAnimation _curved = CurvedAnimation(
+    parent: _animationController,
+    curve: Curves.bounceInOut,
+    // reverseCurve: Curves.bounceOut,
+  );
+
+  late final Animation<Color?> _color = ColorTween(
+    begin: Colors.pink,
+    end: Colors.red,
+  ).animate(_curved);
 
   late final Animation<BorderRadius?> _borderRadius = BorderRadiusTween(
-    begin: BorderRadius.circular(10.0),
+    begin: BorderRadius.circular(4.0),
     end: BorderRadius.zero,
-  ).animate(_animationController);
+  ).animate(_curved);
 
   late final Animation<double> _scale = Tween(
     begin: 1.0,
     end: 0.8,
-  ).animate(_animationController);
+  ).animate(_curved);
 
   late final Animation<double> _opacity = Tween<double>(
     begin: 1.0,
     end: 0.0,
-  ).animate(_animationController);
+  ).animate(_curved);
 
   // hold values : _animationConroller (0.0 ~ 0.1)
   final ValueNotifier<double> _range = ValueNotifier(0.0);
@@ -82,7 +84,7 @@ class _BoxState extends State<Box> with SingleTickerProviderStateMixin {
       _range.value = _animationController.value;
     });
 
-    Future.delayed(Duration(seconds: widget.delay), () {
+    Future.delayed(Duration(milliseconds: widget.delay), () {
       if (mounted) {
         _animationController.repeat(reverse: true);
       }
@@ -101,7 +103,7 @@ class _BoxState extends State<Box> with SingleTickerProviderStateMixin {
       valueListenable: _range, // value 변경 감지, UI(only container) rebuild
       builder: (context, value, child) {
         return Opacity(
-          opacity: _opacity.value,
+          opacity: _opacity.value.clamp(0.0, 1.0), // 값 제한
           child: Transform.scale(
             scale: _scale.value,
             child: Container(
