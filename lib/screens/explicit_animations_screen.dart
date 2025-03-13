@@ -14,7 +14,12 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
     vsync: this, // late
     duration: const Duration(seconds: 2),
     reverseDuration: const Duration(seconds: 1),
-  );
+  )..addListener(() {
+    // setState(() {
+    //   _range = _animationController.value;
+    // });
+    _range.value = _animationController.value;
+  });
 
   late final Animation<Decoration> _decoration = DecorationTween(
     begin: BoxDecoration(
@@ -66,8 +71,23 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
     super.dispose();
   }
 
+  // double _range = 0.0; // setState
+  final ValueNotifier<double> _range = ValueNotifier(
+    0.0,
+  ); // without build method
+
+  void _onChanged(double value) {
+    // setState(() {
+    //   _range = value;
+    // });
+    _range.value = 0;
+    _animationController.value = value; // set value(override)
+    // _animationController.animateTo(value); // set animation
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("build");
     return Scaffold(
       appBar: AppBar(title: const Text('Explicit Animations')),
       body: Center(
@@ -95,6 +115,14 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
                 ElevatedButton(onPressed: _pause, child: const Text("Pause")),
                 ElevatedButton(onPressed: _rewind, child: const Text("Rewind")),
               ],
+            ),
+            SizedBox(height: 25.0),
+            // Slider(value: _range.value, onChanged: _onChanged),
+            ValueListenableBuilder(
+              valueListenable: _range,
+              builder: (context, value, child) {
+                return Slider(value: value, onChanged: _onChanged);
+              },
             ),
           ],
         ),
