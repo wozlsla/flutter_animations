@@ -15,11 +15,16 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
     duration: const Duration(seconds: 2),
     reverseDuration: const Duration(seconds: 1),
   )..addListener(() {
-    // setState(() {
-    //   _range = _animationController.value;
-    // });
     _range.value = _animationController.value;
   });
+  /*
+        ..addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            _animationController.reverse();
+          } else if (status == AnimationStatus.dismissed) {
+            _animationController.forward();
+          }
+        }); */
 
   late final Animation<Decoration> _decoration = DecorationTween(
     begin: BoxDecoration(
@@ -71,18 +76,28 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
     super.dispose();
   }
 
-  // double _range = 0.0; // setState
   final ValueNotifier<double> _range = ValueNotifier(
     0.0,
   ); // without build method
 
   void _onChanged(double value) {
-    // setState(() {
-    //   _range = value;
-    // });
     _range.value = 0;
     _animationController.value = value; // set value(override)
     // _animationController.animateTo(value); // set animation
+  }
+
+  bool _looping = false;
+
+  void _toggleLooping() {
+    if (_looping) {
+      _animationController.stop();
+    } else {
+      _animationController.repeat(reverse: true);
+    }
+
+    setState(() {
+      _looping = !_looping;
+    });
   }
 
   @override
@@ -114,10 +129,13 @@ class _ExplicitAnimationsScreenState extends State<ExplicitAnimationsScreen>
                 ElevatedButton(onPressed: _play, child: const Text("Play")),
                 ElevatedButton(onPressed: _pause, child: const Text("Pause")),
                 ElevatedButton(onPressed: _rewind, child: const Text("Rewind")),
+                ElevatedButton(
+                  onPressed: _toggleLooping,
+                  child: Text(_looping ? "Stop looping" : "Start looping"),
+                ),
               ],
             ),
             SizedBox(height: 25.0),
-            // Slider(value: _range.value, onChanged: _onChanged),
             ValueListenableBuilder(
               valueListenable: _range,
               builder: (context, value, child) {
