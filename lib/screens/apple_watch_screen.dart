@@ -14,12 +14,32 @@ class _AppleWatchScreenState extends State<AppleWatchScreen>
   late final AnimationController _animationController = AnimationController(
     vsync: this,
     duration: Duration(seconds: 2),
-    lowerBound: 0.005,
-    upperBound: 2.0,
+  )..forward(); // 진입 즉시 애니메이션 실행
+
+  late final CurvedAnimation _curve = CurvedAnimation(
+    parent: _animationController,
+    curve: Curves.bounceOut,
   );
 
+  late Animation<double> _progress = Tween(
+    begin: 0.005,
+    end: 1.5,
+  ).animate(_curve); // class가 시작될 때 생성되는 값
+
   void _animatedValues() {
-    _animationController.forward();
+    final newBegin = _progress.value;
+    final random = Random();
+    final newEnd = random.nextDouble() * 2.0; // 0 ~ 2
+    setState(() {
+      _progress = Tween(begin: newBegin, end: newEnd).animate(_curve);
+    });
+    _animationController.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -33,10 +53,10 @@ class _AppleWatchScreenState extends State<AppleWatchScreen>
       ),
       body: Center(
         child: AnimatedBuilder(
-          animation: _animationController,
+          animation: _progress,
           builder: (context, chile) {
             return CustomPaint(
-              painter: AppleWatchPainter(progress: _animationController.value),
+              painter: AppleWatchPainter(progress: _progress.value),
               size: Size(400, 400),
             );
           },
