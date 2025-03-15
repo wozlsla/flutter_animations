@@ -45,13 +45,11 @@ class _BoxState extends State<Box> with SingleTickerProviderStateMixin {
   late final AnimationController _animationController = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1200),
-    reverseDuration: const Duration(milliseconds: 1200),
   );
 
   late final CurvedAnimation _curved = CurvedAnimation(
     parent: _animationController,
     curve: Curves.bounceInOut,
-    // reverseCurve: Curves.bounceOut,
   );
 
   late final Animation<Color?> _color = ColorTween(
