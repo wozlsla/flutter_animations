@@ -3,6 +3,7 @@ import 'package:animations/screens/explicit_animations_screen.dart';
 import 'package:animations/screens/implicit_animations_screen.dart';
 import 'package:animations/tasks/explicit_task.dart';
 import 'package:animations/tasks/implicit_task.dart';
+import 'package:animations/tasks/pomodoro.dart';
 import 'package:flutter/material.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -22,7 +23,8 @@ class MenuScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // _goToPage(context, ImplicitTask());
-                _goToPage(context, ExplicitTask());
+                // _goToPage(context, ExplicitTask());
+                _goToPage(context, Pomodoro());
               },
               child: Text("Tasks"),
             ),
