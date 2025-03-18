@@ -1,6 +1,7 @@
 import 'package:animations/screens/apple_watch_screen.dart';
 import 'package:animations/screens/explicit_animations_screen.dart';
 import 'package:animations/screens/implicit_animations_screen.dart';
+import 'package:animations/screens/swiping_card_screen.dart';
 import 'package:animations/tasks/explicit_task.dart';
 import 'package:animations/tasks/implicit_task.dart';
 import 'package:animations/tasks/pomodoro.dart';
@@ -46,6 +47,12 @@ class MenuScreen extends StatelessWidget {
                 _goToPage(context, AppleWatchScreen());
               },
               child: Text("Apple Watch"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _goToPage(context, SwipingCardsScreen());
+              },
+              child: Text("Swiping Cards"),
             ),
           ],
         ),
