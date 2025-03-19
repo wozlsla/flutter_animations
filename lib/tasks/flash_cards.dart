@@ -24,8 +24,7 @@ class FlashCards extends StatefulWidget {
   State<FlashCards> createState() => _FlashCardsState();
 }
 
-class _FlashCardsState extends State<FlashCards>
-    with SingleTickerProviderStateMixin {
+class _FlashCardsState extends State<FlashCards> with TickerProviderStateMixin {
   late final size = MediaQuery.of(context).size;
   late final dropZone = size.width + 100;
 
@@ -64,10 +63,35 @@ class _FlashCardsState extends State<FlashCards>
     }
   }
 
+  late final AnimationController _progressController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 300),
+  );
+
+  late Animation<double> _progressAnimation = Tween<double>(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(_curve);
+
+  late final CurvedAnimation _curve = CurvedAnimation(
+    parent: _progressController,
+    curve: Curves.easeInOut,
+  );
+
+  void _animateProgress() {
+    final newBegin = _progressAnimation.value;
+    final newEnd = _index / (dict.length - 1);
+    setState(() {
+      _progressAnimation = Tween(begin: newBegin, end: newEnd).animate(_curve);
+    });
+    _progressController.forward(from: 0);
+  }
+
   void _whenComplete() {
     _position.value = 0;
     setState(() {
       _index = _index == dict.length - 1 ? 0 : _index + 1;
+      _animateProgress();
     });
   }
 
@@ -96,6 +120,7 @@ class _FlashCardsState extends State<FlashCards>
   @override
   void dispose() {
     _position.dispose();
+    _progressController.dispose();
     super.dispose();
   }
 
@@ -158,6 +183,20 @@ class _FlashCardsState extends State<FlashCards>
             ],
           );
         },
+      ),
+      bottomSheet: Container(
+        color: currentColor,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 100.0),
+          child: AnimatedBuilder(
+            animation: _progressAnimation,
+            builder:
+                (context, child) => CustomPaint(
+                  painter: ProgressBar(progressValue: _progressAnimation.value),
+                  size: Size(size.width - 80, 20),
+                ),
+          ),
+        ),
       ),
     );
   }
@@ -263,5 +302,51 @@ class FlashCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class ProgressBar extends CustomPainter {
+  final double progressValue;
+
+  ProgressBar({required this.progressValue});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final progress = size.width * progressValue;
+
+    final barPaint =
+        Paint()
+          ..color = Colors.grey.shade400
+          ..style = PaintingStyle.fill;
+
+    final barRect = RRect.fromLTRBR(
+      0, // left
+      0, // top
+      size.width, // right
+      size.height, // bottom
+      Radius.circular(10),
+    );
+
+    canvas.drawRRect(barRect, barPaint);
+
+    final progressPaint =
+        Paint()
+          ..color = Colors.grey.shade800
+          ..style = PaintingStyle.fill;
+
+    final progressRRect = RRect.fromLTRBR(
+      0,
+      0,
+      progress,
+      size.height,
+      Radius.circular(10),
+    );
+
+    canvas.drawRRect(progressRRect, progressPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant ProgressBar oldDelegate) {
+    return oldDelegate.progressValue != progressValue;
   }
 }
