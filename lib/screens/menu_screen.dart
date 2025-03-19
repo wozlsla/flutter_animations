@@ -3,6 +3,7 @@ import 'package:animations/screens/explicit_animations_screen.dart';
 import 'package:animations/screens/implicit_animations_screen.dart';
 import 'package:animations/screens/swiping_cards_screen.dart';
 import 'package:animations/tasks/explicit_task.dart';
+import 'package:animations/tasks/flash_cards.dart';
 import 'package:animations/tasks/implicit_task.dart';
 import 'package:animations/tasks/pomodoro.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,8 @@ class MenuScreen extends StatelessWidget {
               onPressed: () {
                 // _goToPage(context, ImplicitTask());
                 // _goToPage(context, ExplicitTask());
-                _goToPage(context, Pomodoro());
+                // _goToPage(context, Pomodoro());
+                _goToPage(context, FlashCards());
               },
               child: Text("Tasks"),
             ),
