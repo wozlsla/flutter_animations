@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animations/screens/music_player_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
@@ -20,6 +21,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     setState(() {
       _currentPage = newPage; // 현재 page 저장
     });
+  }
+
+  void _onTap(int imageIndex) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MusicPlayerDetailScreen(index: imageIndex),
+      ),
+    );
   }
 
   @override
@@ -75,25 +85,31 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                       final difference = (scroll - index).abs();
                       final scale = 1 - (difference * 0.1); // sides 10% 축소
 
-                      return Transform.scale(
-                        scale: scale,
-                        child: Container(
-                          height: 350.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.5),
-                                blurRadius: 12,
-                                spreadRadius: 2,
-                                offset: Offset(0, 8),
+                      return GestureDetector(
+                        onTap: () => _onTap(index + 1),
+                        child: Hero(
+                          tag: "${index + 1}",
+                          child: Transform.scale(
+                            scale: scale,
+                            child: Container(
+                              height: 350.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.5),
+                                    blurRadius: 12,
+                                    spreadRadius: 2,
+                                    offset: Offset(0, 8),
+                                  ),
+                                ],
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                    "assets/covers/${index + 1}.jpg",
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ],
-                            image: DecorationImage(
-                              image: AssetImage(
-                                "assets/covers/${index + 1}.jpg",
-                              ),
-                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
