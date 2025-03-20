@@ -1,6 +1,7 @@
 import 'package:animations/screens/apple_watch_screen.dart';
 import 'package:animations/screens/explicit_animations_screen.dart';
 import 'package:animations/screens/implicit_animations_screen.dart';
+import 'package:animations/screens/music_player_screen.dart';
 import 'package:animations/screens/swiping_cards_screen.dart';
 import 'package:animations/tasks/explicit_task.dart';
 import 'package:animations/tasks/flash_cards.dart';
@@ -55,6 +56,12 @@ class MenuScreen extends StatelessWidget {
                 _goToPage(context, SwipingCardsScreen());
               },
               child: Text("Swiping Cards"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _goToPage(context, MusicPlayerScreen());
+              },
+              child: Text("Music Player"),
             ),
           ],
         ),
