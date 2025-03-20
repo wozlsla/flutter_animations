@@ -37,7 +37,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
 
   late final AnimationController _menuController = AnimationController(
     vsync: this,
-    duration: Duration(seconds: 5),
+    duration: Duration(seconds: 3),
   );
 
   final Curve _menuCurve = Curves.easeInOut;
@@ -48,7 +48,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
   ).animate(
     CurvedAnimation(
       parent: _menuController,
-      curve: Interval(0.0, 0.5, curve: _menuCurve),
+      curve: Interval(0.0, 0.3, curve: _menuCurve),
     ),
   );
 
@@ -58,7 +58,27 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
   ).animate(
     CurvedAnimation(
       parent: _menuController,
-      curve: Interval(0.5, 1.0, curve: _menuCurve),
+      curve: Interval(0.2, 0.4, curve: _menuCurve),
+    ),
+  );
+
+  late final Animation<double> _closeButtonOpacity = Tween<double>(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _menuController,
+      curve: Interval(0.3, 0.5, curve: _menuCurve),
+    ),
+  );
+
+  late final Animation<Offset> _profileSlide = Tween<Offset>(
+    begin: Offset(-1, 0),
+    end: Offset.zero,
+  ).animate(
+    CurvedAnimation(
+      parent: _menuController,
+      curve: Interval(0.4, 0.7, curve: _menuCurve),
     ),
   );
 
@@ -125,10 +145,13 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
           backgroundColor: Colors.black,
           appBar: AppBar(
             backgroundColor: Colors.black,
-            leading: IconButton(
-              color: Colors.white,
-              onPressed: _closeMenu,
-              icon: Icon(Icons.close),
+            leading: FadeTransition(
+              opacity: _closeButtonOpacity,
+              child: IconButton(
+                color: Colors.white,
+                onPressed: _closeMenu,
+                icon: Icon(Icons.close),
+              ),
             ),
           ),
           body: Padding(
@@ -137,18 +160,21 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
               children: [
                 SizedBox(height: 30.0),
                 for (var menu in _menus) ...[
-                  Row(
-                    children: [
-                      Icon(menu["icon"], color: Colors.grey.shade200),
-                      SizedBox(width: 10.0),
-                      Text(
-                        menu["text"],
-                        style: TextStyle(
-                          color: Colors.grey.shade200,
-                          fontSize: 18.0,
+                  SlideTransition(
+                    position: _profileSlide,
+                    child: Row(
+                      children: [
+                        Icon(menu["icon"], color: Colors.grey.shade200),
+                        SizedBox(width: 10.0),
+                        Text(
+                          menu["text"],
+                          style: TextStyle(
+                            color: Colors.grey.shade200,
+                            fontSize: 18.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: 30.0), // fill column
                 ],
