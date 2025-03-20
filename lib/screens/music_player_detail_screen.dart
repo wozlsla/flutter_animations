@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+// import 'package:lottie/lottie.dart';
 
 class MusicPlayerDetailScreen extends StatefulWidget {
   final int index;
@@ -29,12 +30,25 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     end: Offset(-0.6, 0),
   ).animate(_marqueeController); // fraction
 
+  late final AnimationController _playController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 500),
+  );
+
   String _timeFormatter(double value) {
     // value(0.0~1.0) -> 1m(60,000ms)
     final duration = Duration(milliseconds: (value * 60000).toInt());
     final timeString =
         "${duration.inMinutes.toString().padLeft(2, "0")}:${(duration.inSeconds % 60).toString().padLeft(2, "0")}";
     return timeString;
+  }
+
+  void _onPlayTap() {
+    if (_playController.isCompleted) {
+      _playController.reverse();
+    } else {
+      _playController.forward();
+    }
   }
 
   @override
@@ -153,6 +167,29 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                   overflow: TextOverflow.visible,
                   softWrap: false,
                   style: TextStyle(fontSize: 18),
+                ),
+              ),
+              const SizedBox(height: 30.0),
+              GestureDetector(
+                onTap: _onPlayTap,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedIcon(
+                      icon: AnimatedIcons.pause_play,
+                      progress: _playController,
+                      size: 60.0,
+                    ),
+                    // LottieBuilder.asset(
+                    //   "assets/icons/lottie_play.json",
+                    //   controller: _playController,
+                    //   onLoaded: (composition) {
+                    //     _playController.duration = composition.duration;
+                    //   },
+                    //   width: 150,
+                    //   height: 150,
+                    // ),
+                  ],
                 ),
               ),
             ],
