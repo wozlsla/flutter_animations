@@ -15,6 +15,12 @@ class MusicPlayerDetailScreen extends StatefulWidget {
 
 class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     with TickerProviderStateMixin {
+  final List<Map<String, dynamic>> _menus = [
+    {"icon": Icons.person, "text": "Profile"},
+    {"icon": Icons.notifications, "text": "Notifications"},
+    {"icon": Icons.settings, "text": "Settings"},
+  ];
+
   late final AnimationController _progressController = AnimationController(
     vsync: this,
     duration: Duration(minutes: 1),
@@ -25,7 +31,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     duration: Duration(seconds: 16),
   )..repeat(reverse: true);
 
-  late final Animation<Offset> _marqueeTween = Tween(
+  late final Animation<Offset> _marqueeTween = Tween<Offset>(
     begin: Offset(0.1, 0),
     end: Offset(-0.6, 0),
   ).animate(_marqueeController); // fraction
@@ -37,12 +43,13 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
 
   late final AnimationController _menuController = AnimationController(
     vsync: this,
-    duration: Duration(seconds: 3),
+    duration: Duration(seconds: 2),
+    reverseDuration: Duration(seconds: 1),
   );
 
   final Curve _menuCurve = Curves.easeInOut;
 
-  late final Animation<double> _screenScale = Tween(
+  late final Animation<double> _screenScale = Tween<double>(
     begin: 1.0,
     end: 0.7,
   ).animate(
@@ -52,7 +59,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     ),
   );
 
-  late final Animation<Offset> _screenOffset = Tween(
+  late final Animation<Offset> _screenOffset = Tween<Offset>(
     begin: Offset.zero,
     end: Offset(0.5, 0),
   ).animate(
@@ -72,13 +79,23 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     ),
   );
 
-  late final Animation<Offset> _profileSlide = Tween<Offset>(
+  late final List<Animation<Offset>> _menuAnimations = [
+    for (var i = 0; i < _menus.length; i++)
+      Tween<Offset>(begin: Offset(-1, 0), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _menuController,
+          curve: Interval(0.4 + (0.1 * i), 0.7 + (0.1 * i), curve: _menuCurve),
+        ),
+      ),
+  ];
+
+  late final Animation<Offset> _logOutSlide = Tween<Offset>(
     begin: Offset(-1, 0),
     end: Offset.zero,
   ).animate(
     CurvedAnimation(
       parent: _menuController,
-      curve: Interval(0.4, 0.7, curve: _menuCurve),
+      curve: Interval(0.8, 1.0, curve: _menuCurve),
     ),
   );
 
@@ -123,16 +140,11 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     _menuController.reverse();
   }
 
-  final List<Map<String, dynamic>> _menus = [
-    {"icon": Icons.person, "text": "Profile"},
-    {"icon": Icons.notifications, "text": "Notifications"},
-    {"icon": Icons.settings, "text": "Settings"},
-  ];
-
   @override
   void dispose() {
     _progressController.dispose();
     _marqueeController.dispose();
+    _menuController.dispose();
     super.dispose();
   }
 
@@ -159,15 +171,15 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
             child: Column(
               children: [
                 SizedBox(height: 30.0),
-                for (var menu in _menus) ...[
+                for (var i = 0; i < _menus.length; i++) ...[
                   SlideTransition(
-                    position: _profileSlide,
+                    position: _menuAnimations[i],
                     child: Row(
                       children: [
-                        Icon(menu["icon"], color: Colors.grey.shade200),
+                        Icon(_menus[i]["icon"], color: Colors.grey.shade200),
                         SizedBox(width: 10.0),
                         Text(
-                          menu["text"],
+                          _menus[i]["text"],
                           style: TextStyle(
                             color: Colors.grey.shade200,
                             fontSize: 18.0,
@@ -179,16 +191,19 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                   SizedBox(height: 30.0), // fill column
                 ],
                 Spacer(),
-                Row(
-                  children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 10.0),
-                    Text(
-                      "Log Out",
-                      style: TextStyle(color: Colors.red, fontSize: 18.0),
-                    ),
-                    SizedBox(height: 100.0),
-                  ],
+                SlideTransition(
+                  position: _logOutSlide,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Colors.red),
+                      SizedBox(width: 10.0),
+                      Text(
+                        "Log Out",
+                        style: TextStyle(color: Colors.red, fontSize: 18.0),
+                      ),
+                      SizedBox(height: 100.0),
+                    ],
+                  ),
                 ),
               ],
             ),
