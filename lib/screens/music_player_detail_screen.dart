@@ -13,11 +13,21 @@ class MusicPlayerDetailScreen extends StatefulWidget {
 }
 
 class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _progressController = AnimationController(
     vsync: this,
     duration: Duration(minutes: 1),
   )..repeat(reverse: true); // 정방향
+
+  late final AnimationController _marqueeController = AnimationController(
+    vsync: this,
+    duration: Duration(seconds: 16),
+  )..repeat(reverse: true);
+
+  late final Animation<Offset> _marqueeTween = Tween(
+    begin: Offset(0.1, 0),
+    end: Offset(-0.6, 0),
+  ).animate(_marqueeController); // fraction
 
   String _timeFormatter(double value) {
     // value(0.0~1.0) -> 1m(60,000ms)
@@ -30,6 +40,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
   @override
   void dispose() {
     _progressController.dispose();
+    _marqueeController.dispose();
     super.dispose();
   }
 
@@ -53,12 +64,14 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
             ),
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 70.0),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_ios_new_rounded),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.arrow_back_ios_new_rounded),
+                ),
               ),
               SizedBox(height: 50.0),
               Align(
@@ -125,6 +138,22 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                         ),
                       ],
                     ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "I DO ME",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 5),
+              SlideTransition(
+                position: _marqueeTween,
+                child: const Text(
+                  "KiiiKiii - The 1st EP [UNCUT GEM] Let's laugh out loud in this world with five kids!",
+                  maxLines: 1,
+                  overflow: TextOverflow.visible,
+                  softWrap: false,
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
             ],
           ),
