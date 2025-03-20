@@ -27,27 +27,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     Navigator.push(
       context,
       PageRouteBuilder(
-        // transitionDuration: Duration(milliseconds: 300),
-        // reverseTransitionDuration: Duration(milliseconds: 300),
         pageBuilder: (context, animation, secondaryAnimation) {
           return FadeTransition(
             opacity: animation,
             child: MusicPlayerDetailScreen(index: imageIndex),
           );
-
-          // return ScaleTransition(
-          //   scale: animation,
-          //   child: MusicPlayerDetailScreen(index: imageIndex),
-          // );
-
-          // final offset = Tween(
-          //   begin: Offset(0.2, 0.2),
-          //   end: Offset.zero,
-          // ).animate(animation);
-          // return SlideTransition(
-          //   position: offset,
-          //   child: MusicPlayerDetailScreen(index: imageIndex),
-          // );
         },
       ),
     );

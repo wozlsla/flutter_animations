@@ -11,10 +11,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Flutter Animations ",
+      title: "Flutter Animations",
+      themeMode: ThemeMode.system,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.light(primary: Colors.blue),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.dark(primary: Color(0xFF209BC4)),
       ),
       home: MenuScreen(),
     );
