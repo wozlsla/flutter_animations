@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class MusicPlayerDetailScreen extends StatefulWidget {
@@ -36,74 +38,95 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(title: Text("I DO ME")),
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(height: 30.0),
-          Align(
-            alignment: Alignment.center,
-            child: Hero(
-              tag: "${widget.index}",
-              child: Container(
-                width: 350.0,
-                height: 350.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      blurRadius: 12,
-                      spreadRadius: 2,
-                      offset: Offset(0, 8),
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/covers/${widget.index}.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(color: Colors.black.withValues(alpha: 0.65)),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 70.0),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back_ios_new_rounded),
+              ),
+              SizedBox(height: 50.0),
+              Align(
+                alignment: Alignment.center,
+                child: Hero(
+                  tag: "${widget.index}",
+                  child: Container(
+                    width: 350.0,
+                    height: 350.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
+                      image: DecorationImage(
+                        image: AssetImage("assets/covers/${widget.index}.jpg"),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ],
-                  image: DecorationImage(
-                    image: AssetImage("assets/covers/${widget.index}.jpg"),
-                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-            ),
-          ),
-          SizedBox(height: 50.0),
-          AnimatedBuilder(
-            animation: _progressController,
-            builder:
-                (context, child) => Column(
-                  children: [
-                    CustomPaint(
-                      size: Size(size.width - 80, 7),
-                      painter: ProgressBar(
-                        progressValue: _progressController.value,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Row(
-                        children: [
-                          Text(
-                            _timeFormatter(_progressController.value),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                            ),
+              SizedBox(height: 50.0),
+              AnimatedBuilder(
+                animation: _progressController,
+                builder:
+                    (context, child) => Column(
+                      children: [
+                        CustomPaint(
+                          size: Size(size.width - 80, 7),
+                          painter: ProgressBar(
+                            progressValue: _progressController.value,
                           ),
-                          Spacer(),
-                          Text(
-                            _timeFormatter(1 - _progressController.value),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Row(
+                            children: [
+                              Text(
+                                _timeFormatter(_progressController.value),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                _timeFormatter(1 - _progressController.value),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+              ),
+            ],
           ),
         ],
       ),
