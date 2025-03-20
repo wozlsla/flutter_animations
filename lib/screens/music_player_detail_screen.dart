@@ -35,6 +35,11 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     duration: Duration(milliseconds: 500),
   );
 
+  late final AnimationController _menuController = AnimationController(
+    vsync: this,
+    duration: Duration(seconds: 5),
+  );
+
   String _timeFormatter(double value) {
     // value(0.0~1.0) -> 1m(60,000ms)
     final duration = Duration(milliseconds: (value * 60000).toInt());
@@ -68,7 +73,19 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     _volume.value = _volume.value.clamp(0.0, barWidth);
   }
 
-  void _openMenu() {}
+  void _openMenu() {
+    _menuController.forward();
+  }
+
+  void _closeMenu() {
+    _menuController.reverse();
+  }
+
+  final List<Map<String, dynamic>> _menus = [
+    {"icon": Icons.person, "text": "Profile"},
+    {"icon": Icons.notifications, "text": "Notifications"},
+    {"icon": Icons.settings, "text": "Settings"},
+  ];
 
   @override
   void dispose() {
@@ -79,170 +96,228 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/covers/${widget.index}.jpg"),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-              child: Container(color: Colors.black.withValues(alpha: 0.65)),
+    return Stack(
+      children: [
+        // back scaffold
+        Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            leading: IconButton(
+              color: Colors.white,
+              onPressed: _closeMenu,
+              icon: Icon(Icons.close),
             ),
           ),
-          Column(
-            children: [
-              SizedBox(height: 70.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back_ios_new_rounded),
-                  ),
-                  IconButton(onPressed: _openMenu, icon: Icon(Icons.menu)),
-                ],
-              ),
-              SizedBox(height: 50.0),
-              Align(
-                alignment: Alignment.center,
-                child: Hero(
-                  tag: "${widget.index}",
-                  child: Container(
-                    width: 350.0,
-                    height: 350.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          blurRadius: 12,
-                          spreadRadius: 2,
-                          offset: Offset(0, 8),
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              children: [
+                SizedBox(height: 30.0),
+                for (var menu in _menus) ...[
+                  Row(
+                    children: [
+                      Icon(menu["icon"], color: Colors.grey.shade200),
+                      SizedBox(width: 10.0),
+                      Text(
+                        menu["text"],
+                        style: TextStyle(
+                          color: Colors.grey.shade200,
+                          fontSize: 18.0,
                         ),
-                      ],
-                      image: DecorationImage(
-                        image: AssetImage("assets/covers/${widget.index}.jpg"),
-                        fit: BoxFit.cover,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30.0), // fill column
+                ],
+                Spacer(),
+                Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 10.0),
+                    Text(
+                      "Log Out",
+                      style: TextStyle(color: Colors.red, fontSize: 18.0),
+                    ),
+                    SizedBox(height: 100.0),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // music player scaffold
+        Scaffold(
+          body: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/covers/${widget.index}.jpg"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                  child: Container(color: Colors.black.withValues(alpha: 0.65)),
+                ),
+              ),
+              Column(
+                children: [
+                  SizedBox(height: 70.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.arrow_back_ios_new_rounded),
+                      ),
+                      IconButton(onPressed: _openMenu, icon: Icon(Icons.menu)),
+                    ],
+                  ),
+                  SizedBox(height: 50.0),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Hero(
+                      tag: "${widget.index}",
+                      child: Container(
+                        width: 350.0,
+                        height: 350.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                          image: DecorationImage(
+                            image: AssetImage(
+                              "assets/covers/${widget.index}.jpg",
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 50.0),
-              AnimatedBuilder(
-                animation: _progressController,
-                builder:
-                    (context, child) => Column(
-                      children: [
-                        CustomPaint(
-                          size: Size(barWidth, 7),
-                          painter: ProgressBar(
-                            progressValue: _progressController.value,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: Row(
-                            children: [
-                              Text(
-                                _timeFormatter(_progressController.value),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                  SizedBox(height: 50.0),
+                  AnimatedBuilder(
+                    animation: _progressController,
+                    builder:
+                        (context, child) => Column(
+                          children: [
+                            CustomPaint(
+                              size: Size(barWidth, 7),
+                              painter: ProgressBar(
+                                progressValue: _progressController.value,
                               ),
-                              Spacer(),
-                              Text(
-                                _timeFormatter(1 - _progressController.value),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            ),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 40,
                               ),
-                            ],
-                          ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    _timeFormatter(_progressController.value),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Text(
+                                    _timeFormatter(
+                                      1 - _progressController.value,
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "I DO ME",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 5),
-              SlideTransition(
-                position: _marqueeTween,
-                child: const Text(
-                  "KiiiKiii - The 1st EP [UNCUT GEM] Let's laugh out loud in this world with five kids!",
-                  maxLines: 1,
-                  overflow: TextOverflow.visible,
-                  softWrap: false,
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              const SizedBox(height: 30.0),
-              GestureDetector(
-                onTap: _onPlayTap,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedIcon(
-                      icon: AnimatedIcons.pause_play,
-                      progress: _playController,
-                      size: 60.0,
-                    ),
-                    // LottieBuilder.asset(
-                    //   "assets/icons/lottie_play.json",
-                    //   controller: _playController,
-                    //   onLoaded: (composition) {
-                    //     _playController.duration = composition.duration;
-                    //   },
-                    //   width: 150,
-                    //   height: 150,
-                    // ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30.0),
-              GestureDetector(
-                onHorizontalDragUpdate: _onVolumeDragUpdate,
-                onHorizontalDragStart: (_) => _toggleDragging(),
-                onHorizontalDragEnd: (_) => _toggleDragging(),
-                child: AnimatedScale(
-                  scale: _dragging ? 1.1 : 1,
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.bounceOut,
-                  child: Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    child: ValueListenableBuilder(
-                      valueListenable: _volume,
-                      builder:
-                          (context, value, child) => CustomPaint(
-                            size: Size(barWidth, 16),
-                            painter: VolumePaint(volume: value),
-                          ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "I DO ME",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 5),
+                  SlideTransition(
+                    position: _marqueeTween,
+                    child: const Text(
+                      "KiiiKiii - The 1st EP [UNCUT GEM] Let's laugh out loud in this world with five kids!",
+                      maxLines: 1,
+                      overflow: TextOverflow.visible,
+                      softWrap: false,
+                      style: TextStyle(fontSize: 18),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 30.0),
+                  GestureDetector(
+                    onTap: _onPlayTap,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AnimatedIcon(
+                          icon: AnimatedIcons.pause_play,
+                          progress: _playController,
+                          size: 60.0,
+                        ),
+                        // LottieBuilder.asset(
+                        //   "assets/icons/lottie_play.json",
+                        //   controller: _playController,
+                        //   onLoaded: (composition) {
+                        //     _playController.duration = composition.duration;
+                        //   },
+                        //   width: 150,
+                        //   height: 150,
+                        // ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30.0),
+                  GestureDetector(
+                    onHorizontalDragUpdate: _onVolumeDragUpdate,
+                    onHorizontalDragStart: (_) => _toggleDragging(),
+                    onHorizontalDragEnd: (_) => _toggleDragging(),
+                    child: AnimatedScale(
+                      scale: _dragging ? 1.1 : 1,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.bounceOut,
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: ValueListenableBuilder(
+                          valueListenable: _volume,
+                          builder:
+                              (context, value, child) => CustomPaint(
+                                size: Size(barWidth, 16),
+                                painter: VolumePaint(volume: value),
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
