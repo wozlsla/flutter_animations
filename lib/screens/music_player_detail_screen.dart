@@ -51,6 +51,25 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
     }
   }
 
+  bool _dragging = false;
+
+  void _toggleDragging() {
+    setState(() {
+      _dragging = !_dragging;
+    });
+  }
+
+  final ValueNotifier<double> _volume = ValueNotifier(0.0);
+
+  late final size = MediaQuery.of(context).size;
+  late final barWidth = size.width - 80;
+  void _onVolumeDragUpdate(DragUpdateDetails details) {
+    _volume.value += details.delta.dx;
+    _volume.value = _volume.value.clamp(0.0, barWidth);
+  }
+
+  void _openMenu() {}
+
   @override
   void dispose() {
     _progressController.dispose();
@@ -80,12 +99,15 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
           Column(
             children: [
               SizedBox(height: 70.0),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.arrow_back_ios_new_rounded),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded),
+                  ),
+                  IconButton(onPressed: _openMenu, icon: Icon(Icons.menu)),
+                ],
               ),
               SizedBox(height: 50.0),
               Align(
@@ -120,7 +142,7 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                     (context, child) => Column(
                       children: [
                         CustomPaint(
-                          size: Size(size.width - 80, 7),
+                          size: Size(barWidth, 7),
                           painter: ProgressBar(
                             progressValue: _progressController.value,
                           ),
@@ -192,6 +214,31 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                   ],
                 ),
               ),
+              const SizedBox(height: 30.0),
+              GestureDetector(
+                onHorizontalDragUpdate: _onVolumeDragUpdate,
+                onHorizontalDragStart: (_) => _toggleDragging(),
+                onHorizontalDragEnd: (_) => _toggleDragging(),
+                child: AnimatedScale(
+                  scale: _dragging ? 1.1 : 1,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.bounceOut,
+                  child: Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: ValueListenableBuilder(
+                      valueListenable: _volume,
+                      builder:
+                          (context, value, child) => CustomPaint(
+                            size: Size(barWidth, 16),
+                            painter: VolumePaint(volume: value),
+                          ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -244,5 +291,29 @@ class ProgressBar extends CustomPainter {
   @override
   bool shouldRepaint(covariant ProgressBar oldDelegate) {
     return oldDelegate.progressValue != progressValue;
+  }
+}
+
+class VolumePaint extends CustomPainter {
+  final double volume;
+
+  VolumePaint({required this.volume});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bgPaint =
+        Paint()..color = Colors.grey.shade500.withValues(alpha: 0.4);
+    final bgRect = Rect.fromLTWH(0, 0, size.width, size.height);
+
+    canvas.drawRect(bgRect, bgPaint);
+
+    final volumePaint = Paint()..color = Colors.grey.shade500;
+    final volumeRect = Rect.fromLTWH(0, 0, volume, size.height);
+    canvas.drawRect(volumeRect, volumePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant VolumePaint oldDelegate) {
+    return oldDelegate.volume != volume;
   }
 }
