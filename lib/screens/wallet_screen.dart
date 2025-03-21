@@ -34,14 +34,23 @@ class _WalletScreenState extends State<WalletScreen> {
           onTap: _onExpanded,
           child: Column(
             children: [
-                  CreditCard(bgColor: Color(0xff4a4e69))
+                  CreditCard(
+                        bgColor: Color(0xff4a4e69),
+                        isExpanded: _isExpanded,
+                      )
                       .animate(target: _isExpanded ? 0 : 1, delay: 1.5.seconds)
                       .flipV(end: 0.1),
-                  CreditCard(bgColor: Color(0xff008080))
+                  CreditCard(
+                        bgColor: Color(0xff008080),
+                        isExpanded: _isExpanded,
+                      )
                       .animate(target: _isExpanded ? 0 : 1, delay: 1.5.seconds)
                       .flipV(end: 0.1)
                       .slideY(end: -0.8),
-                  CreditCard(bgColor: Color(0xff2a6f97))
+                  CreditCard(
+                        bgColor: Color(0xff2a6f97),
+                        isExpanded: _isExpanded,
+                      )
                       .animate(target: _isExpanded ? 0 : 1, delay: 1.5.seconds)
                       .flipV(end: 0.1)
                       .slideY(end: -0.8 * 2),
@@ -49,19 +58,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 .animate(interval: 500.ms)
                 .fade(begin: 0)
                 .slideX(begin: -1, end: 0),
-
-            /* children: AnimateList(
-              interval: 500.ms,
-              effects: [
-                SlideEffect(begin: Offset(-1, 0), end: Offset.zero),
-                FadeEffect(begin: 0, end: 1),
-              ],
-              children: [
-                CreditCard(bgColor: Color(0xff263238)),
-                CreditCard(bgColor: Color(0xff0CA37F)),
-                CreditCard(bgColor: Color(0xff209BC4)),
-              ],
-            ), */
           ),
         ),
       ),
@@ -69,70 +65,83 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 }
 
+void _onTap() {}
+
 class CreditCard extends StatelessWidget {
   final Color bgColor;
+  final bool isExpanded;
 
-  const CreditCard({super.key, required this.bgColor});
+  const CreditCard({
+    super.key,
+    required this.bgColor,
+    required this.isExpanded,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: bgColor,
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-        child: Column(
-          children: [
-            SizedBox(height: 100),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AbsorbPointer(
+      absorbing: !isExpanded, // true: ignore
+      child: GestureDetector(
+        onTap: _onTap,
+        child: Container(
+          width: double.infinity,
+          margin: EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: bgColor,
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                SizedBox(height: 100),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Credit Cards",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Text(
-                      "**** **** **80",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Credit Cards",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 20,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.amber,
+                        Text(
+                          "**** **** **80",
+                          style: TextStyle(color: Colors.white),
                         ),
-                      ),
+                      ],
+                    ),
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 20,
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.amber,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
