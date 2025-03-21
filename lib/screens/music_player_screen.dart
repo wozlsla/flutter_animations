@@ -122,15 +122,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
                     },
                   ),
                   SizedBox(height: 30.0),
-                  Text(
-                    "I DO ME",
-                    style: TextStyle(fontSize: 26.0, color: Colors.white),
-                  ),
-                  SizedBox(height: 5.0),
-                  Text(
-                    "KiiiKiii",
-                    style: TextStyle(fontSize: 16.0, color: Colors.white),
-                  ),
+                  // Text(
+                  //   "I DO ME",
+                  //   style: TextStyle(fontSize: 26.0, color: Colors.white),
+                  // ),
+                  // SizedBox(height: 5.0),
+                  // Text(
+                  //   "KiiiKiii",
+                  //   style: TextStyle(fontSize: 16.0, color: Colors.white),
+                  // ),
                 ],
               );
             },

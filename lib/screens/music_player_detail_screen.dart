@@ -28,12 +28,12 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
 
   late final AnimationController _marqueeController = AnimationController(
     vsync: this,
-    duration: Duration(seconds: 16),
+    duration: Duration(seconds: 6),
   )..repeat(reverse: true);
 
   late final Animation<Offset> _marqueeTween = Tween<Offset>(
     begin: Offset(0.1, 0),
-    end: Offset(-0.6, 0),
+    end: Offset(-0.2, 0),
   ).animate(_marqueeController); // fraction
 
   late final AnimationController _playController = AnimationController(
@@ -110,8 +110,10 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
   void _onPlayTap() {
     if (_playController.isCompleted) {
       _playController.reverse();
+      _progressController.repeat(reverse: true);
     } else {
       _playController.forward();
+      _progressController.stop();
     }
   }
 
@@ -334,14 +336,16 @@ class _MusicPlayerDetailScreenState extends State<MusicPlayerDetailScreen>
                           ),
                         ),
                         const SizedBox(height: 5),
-                        SlideTransition(
-                          position: _marqueeTween,
-                          child: const Text(
-                            "KiiiKiii - The 1st EP [UNCUT GEM] Let's laugh out loud in this world with five kids!",
-                            maxLines: 1,
-                            overflow: TextOverflow.visible,
-                            softWrap: false,
-                            style: TextStyle(fontSize: 18),
+                        ClipRect(
+                          child: SlideTransition(
+                            position: _marqueeTween,
+                            child: const Text(
+                              "KiiiKiii - The 1st EP [UNCUT GEM]",
+                              maxLines: 1,
+                              overflow: TextOverflow.visible,
+                              softWrap: false,
+                              style: TextStyle(fontSize: 18),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 30.0),
