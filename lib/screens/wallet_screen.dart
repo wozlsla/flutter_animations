@@ -9,31 +9,60 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
+  bool _isExpanded = false;
+
+  void _onExpanded() {
+    setState(() {
+      _isExpanded = true;
+    });
+  }
+
+  void _onShrink() {
+    setState(() {
+      _isExpanded = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Wallet")),
       body: Padding(
         padding: EdgeInsets.all(20),
-        child: Column(
-          children: [
-            CreditCard(bgColor: Color(0xff263238)),
-            CreditCard(bgColor: Color(0xff0CA37F)),
-            CreditCard(bgColor: Color(0xff209BC4)),
-          ].animate(interval: 500.ms).fade(begin: 0).slideX(begin: -1, end: 0),
-
-          /* children: AnimateList(
-            interval: 500.ms,
-            effects: [
-              SlideEffect(begin: Offset(-1, 0), end: Offset.zero),
-              FadeEffect(begin: 0, end: 1),
-            ],
+        child: GestureDetector(
+          onVerticalDragEnd: (_) => _onShrink(),
+          onTap: _onExpanded,
+          child: Column(
             children: [
-              CreditCard(bgColor: Color(0xff263238)),
-              CreditCard(bgColor: Color(0xff0CA37F)),
-              CreditCard(bgColor: Color(0xff209BC4)),
-            ],
-          ), */
+                  CreditCard(bgColor: Color(0xff4a4e69))
+                      .animate(target: _isExpanded ? 0 : 1, delay: 1.5.seconds)
+                      .flipV(end: 0.1),
+                  CreditCard(bgColor: Color(0xff008080))
+                      .animate(target: _isExpanded ? 0 : 1, delay: 1.5.seconds)
+                      .flipV(end: 0.1)
+                      .slideY(end: -0.8),
+                  CreditCard(bgColor: Color(0xff2a6f97))
+                      .animate(target: _isExpanded ? 0 : 1, delay: 1.5.seconds)
+                      .flipV(end: 0.1)
+                      .slideY(end: -0.8 * 2),
+                ]
+                .animate(interval: 500.ms)
+                .fade(begin: 0)
+                .slideX(begin: -1, end: 0),
+
+            /* children: AnimateList(
+              interval: 500.ms,
+              effects: [
+                SlideEffect(begin: Offset(-1, 0), end: Offset.zero),
+                FadeEffect(begin: 0, end: 1),
+              ],
+              children: [
+                CreditCard(bgColor: Color(0xff263238)),
+                CreditCard(bgColor: Color(0xff0CA37F)),
+                CreditCard(bgColor: Color(0xff209BC4)),
+              ],
+            ), */
+          ),
         ),
       ),
     );
