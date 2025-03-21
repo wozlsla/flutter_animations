@@ -159,6 +159,7 @@ class CardDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(title: Text("Transactions")),
       body: Padding(
@@ -172,6 +173,44 @@ class CardDetailScreen extends StatelessWidget {
                 isExpanded: false, // ignore gesturedetector
               ),
             ),
+            ...[
+                  for (var _ in [1, 1, 1, 1, 1, 1])
+                    Container(
+                      margin: EdgeInsets.only(bottom: 10),
+                      child: ListTile(
+                        tileColor: isDark ? Colors.grey[900] : Colors.grey[200],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        leading: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xffE9435A),
+                          ),
+                          child: Icon(Icons.shopping_bag, color: Colors.white),
+                        ),
+                        title: Text("Game", style: TextStyle(fontSize: 18)),
+                        subtitle: Text(
+                          "Maple Story",
+                          style: TextStyle(
+                            color: isDark ? Colors.grey[400] : Colors.grey[800],
+                          ),
+                        ),
+                        trailing: const Text(
+                          "\$452,895",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                ]
+                .animate(interval: 500.ms)
+                .fadeIn(begin: 0)
+                .flipV(begin: -1, end: 0, curve: Curves.bounceOut),
           ],
         ),
       ),
