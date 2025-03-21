@@ -3,6 +3,7 @@ import 'package:animations/screens/explicit_animations_screen.dart';
 import 'package:animations/screens/implicit_animations_screen.dart';
 import 'package:animations/screens/music_player_screen.dart';
 import 'package:animations/screens/swiping_cards_screen.dart';
+import 'package:animations/screens/wallet_screen.dart';
 import 'package:animations/tasks/explicit_task.dart';
 import 'package:animations/tasks/flash_cards.dart';
 import 'package:animations/tasks/implicit_task.dart';
@@ -18,6 +19,7 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(title: Text("Flutter Animations")),
       body: Center(
@@ -57,11 +59,31 @@ class MenuScreen extends StatelessWidget {
               },
               child: Text("Swiping Cards"),
             ),
+            SizedBox(height: 20.0),
             ElevatedButton(
+              style:
+                  isDark
+                      ? ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[900],
+                      )
+                      : null,
               onPressed: () {
                 _goToPage(context, MusicPlayerScreen());
               },
               child: Text("Music Player"),
+            ),
+            SizedBox(height: 4.0),
+            ElevatedButton(
+              style:
+                  isDark
+                      ? ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[900],
+                      )
+                      : null,
+              onPressed: () {
+                _goToPage(context, WalletScreen());
+              },
+              child: Text("Wallet"),
             ),
           ],
         ),
